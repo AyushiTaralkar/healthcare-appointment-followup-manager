@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "super-secret-healthcare-key-change-in-
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
