@@ -327,309 +327,247 @@ function App() {
         </section>
 
         {/* APPOINTMENTS */}
-        <section className="section">
+<section className="section">
 
-          <div className="section-header">
-            <div>
-              <h3>My appointments</h3>
-              <p>Your scheduled consultations.</p>
-            </div>
+  <div className="section-header">
+    <div>
+      <h3>My appointments</h3>
+      <p>Your scheduled consultations.</p>
+    </div>
+  </div>
+
+  {appointments.length === 0 ? (
+
+    <div className="empty">
+
+      <div className="empty-icon">📅</div>
+
+      <h4>No appointments yet</h4>
+
+      <p>
+        Book a consultation with one of our doctors
+        to get started.
+      </p>
+
+    </div>
+
+  ) : (
+
+    <div className="appointments">
+
+      {appointments.map((appointment) => (
+
+        <div
+          className="appointment-card"
+          key={appointment.id}
+        >
+
+          {/* --------------------------------------------- */}
+          {/* APPOINTMENT HEADER */}
+          {/* --------------------------------------------- */}
+
+          <div className="appointment-icon">
+            👨‍⚕️
           </div>
 
-          {appointments.length === 0 ? (
+          <div className="appointment-details">
 
-            <div className="empty">
+            <h4>
+              {appointment.doctor_name}
+            </h4>
 
-              <div className="empty-icon">📅</div>
+            <p>
+              📅{" "}
+              {new Date(
+                appointment.start_time
+              ).toLocaleString()}
+            </p>
 
-              <h4>No appointments yet</h4>
+            {appointment.symptoms && (
+              <small>
+                {appointment.symptoms}
+              </small>
+            )}
 
-              <p>
-                Book a consultation with one of our doctors
-                to get started.
-              </p>
+          </div>
 
-            </div>
+          <div className="appointment-actions">
 
-          ) : (
+            <span
+              className={`status ${appointment.status.toLowerCase()}`}
+            >
+              {appointment.status}
+            </span>
 
-            <div className="appointments">
+            {(appointment.status === "BOOKED" ||
+              appointment.status === "CONFIRMED") && (
 
-              {appointments.map((appointment) => (
+              <button
+                className="cancel-btn"
+                onClick={() =>
+                  cancelAppointment(appointment.id)
+                }
+              >
+                Cancel
+              </button>
 
-                <div className="appointment-card" key={appointment.id}>
+            )}
 
-                  <div className="appointment-icon">
-                    👨‍⚕️
-                  </div>
+          </div>
 
-                  <div className="appointment-details">
 
-                    <h4>{appointment.doctor_name}</h4>
+          {/* --------------------------------------------- */}
+          {/* AI PRE-VISIT SUMMARY */}
+          {/* --------------------------------------------- */}
 
-                    <p>
-                      📅{" "}
-                      {new Date(
-                        appointment.start_time
-                      ).toLocaleString()}
-                    </p>
+          {appointment.pre_visit_summary && (
 
-                    {appointment.symptoms && (
-                      <small>
-                        {appointment.symptoms}
-                      </small>
-                    )}
+            <div className="ai-summary">
 
-                  </div>
+              <div className="ai-summary-header">
 
-                  <div className="appointment-actions">
+                <div>
+                  <span className="ai-label">
+                    ✨ AI PRE-VISIT SUMMARY
+                  </span>
 
-                    <span
-                      className={`status ${appointment.status.toLowerCase()}`}
-                    >
-                      {appointment.status}
-                    </span>
+                  <h4>
+                    Your consultation preparation
+                  </h4>
+                </div>
 
-                    {(appointment.status === "BOOKED" ||
-                      appointment.status === "CONFIRMED") && (
+                {appointment.urgency_level && (
 
-                      <button
-                        className="cancel-btn"
-                        onClick={() =>
-                          cancelAppointment(appointment.id)
-                        }
-                      >
-                        Cancel
-                      </button>
+                  <span
+                    className={`urgency ${
+                      appointment.urgency_level
+                        .toLowerCase()
+                    }`}
+                  >
+                    {appointment.urgency_level} urgency
+                  </span>
 
-                    )}
+                )}
 
-                  </div>
+              </div>
+
+
+              {/* SUMMARY */}
+
+              <div className="ai-section">
+
+                <span className="ai-section-title">
+                  Summary
+                </span>
+
+                <p>
+                  {appointment.pre_visit_summary}
+                </p>
+
+              </div>
+
+
+              {/* CHIEF COMPLAINT */}
+
+              {appointment.chief_complaint && (
+
+                <div className="ai-section">
+
+                  <span className="ai-section-title">
+                    Chief complaint
+                  </span>
+
+                  <p>
+                    {appointment.chief_complaint}
+                  </p>
 
                 </div>
 
-              ))}
+              )}
+
+
+              {/* SUGGESTED QUESTIONS */}
+
+              {appointment.suggested_questions &&
+                appointment.suggested_questions.length > 0 && (
+
+                  <div className="ai-section">
+
+                    <span className="ai-section-title">
+                      Suggested questions for your doctor
+                    </span>
+
+                    <ul className="ai-questions">
+
+                      {appointment.suggested_questions.map(
+                        (question, index) => (
+
+                          <li key={index}>
+                            <span>•</span>
+                            {question}
+                          </li>
+
+                        )
+                      )}
+
+                    </ul>
+
+                  </div>
+
+                )}
 
             </div>
 
           )}
 
-        </section>
 
-      </main>
+          {/* --------------------------------------------- */}
+          {/* DOCTOR NOTES */}
+          {/* --------------------------------------------- */}
 
-      {/* BOOKING MODAL */}
-      {selectedDoctor && (
+          {appointment.doctor_notes && (
 
-        <div className="modal-overlay">
+            <div className="doctor-notes">
 
-          <div className="modal">
+              <strong>
+                🩺 Doctor Notes
+              </strong>
 
-            <button
-              className="close"
-              onClick={() => setSelectedDoctor(null)}
-            >
-              ×
-            </button>
-
-            <div className="modal-doctor">
-
-              <div className="doctor-avatar large">
-                {selectedDoctor.name
-                  ?.replace("Dr.", "")
-                  .trim()
-                  .charAt(0)}
-              </div>
-
-              <div>
-                <h3>{selectedDoctor.name}</h3>
-                <p>{selectedDoctor.specialisation}</p>
-              </div>
+              <p>
+                {appointment.doctor_notes}
+              </p>
 
             </div>
 
-            <h2>Book an appointment</h2>
-            <p className="modal-subtitle">
-              Choose a convenient date and time.
-            </p>
+          )}
 
-            <label>Date</label>
 
-            <input
-              type="date"
-              value={date}
-              min={new Date().toISOString().split("T")[0]}
-              onChange={(e) => setDate(e.target.value)}
-            />
+          {/* --------------------------------------------- */}
+          {/* PRESCRIPTION */}
+          {/* --------------------------------------------- */}
 
-            <label>Time</label>
+          {appointment.prescription && (
 
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-            />
+            <div className="prescription">
 
-            <label>Reason for visit</label>
+              <strong>
+                💊 Prescription
+              </strong>
 
-            <textarea
-              rows="4"
-              placeholder="Tell us briefly about your symptoms..."
-              value={symptoms}
-              onChange={(e) => setSymptoms(e.target.value)}
-            />
+              <p>
+                {appointment.prescription}
+              </p>
 
-            <button
-              className="primary-btn modal-btn"
-              onClick={bookAppointment}
-            >
-              Confirm appointment
-              <span>→</span>
-            </button>
+            </div>
 
-          </div>
+          )}
 
         </div>
 
-      )}
-
-    </div>
-  );
-}
-
-
-function Stat({ icon, title, value }) {
-  return (
-    <div className="stat-card">
-
-      <div className="stat-icon">
-        {icon}
-      </div>
-
-      <div>
-        <p>{title}</p>
-        <strong>{value}</strong>
-      </div>
-
-    </div>
-  );
-}
-
-
-function Login() {
-
-  const [email, setEmail] = useState("demo@careflow.com");
-  const [password, setPassword] = useState("Demo12345!");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function login(e) {
-
-    e.preventDefault();
-
-    setLoading(true);
-    setError("");
-
-    try {
-
-      const response = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.detail || "Login failed");
-        setLoading(false);
-        return;
-      }
-
-      localStorage.setItem("token", data.access_token);
-      window.location.reload();
-
-    } catch {
-
-      setError(
-        "Failed to connect to the backend."
-      );
-
-    }
-
-    setLoading(false);
-  }
-
-  return (
-
-    <div className="login-page">
-
-      <div className="login-card">
-
-        <div className="login-brand">
-          <div className="brand-icon">✚</div>
-          <div>
-            <h1>CareFlow</h1>
-            <span>Healthcare Manager</span>
-          </div>
-        </div>
-
-        <div className="login-heading">
-          <h2>Welcome back</h2>
-          <p>
-            Sign in to manage your healthcare appointments.
-          </p>
-        </div>
-
-        {error && (
-          <div className="error">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={login}>
-
-          <label>Email</label>
-
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <label>Password</label>
-
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <button
-            className="login-btn"
-            disabled={loading}
-          >
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
-
-        </form>
-
-        <div className="demo">
-          <strong>Demo account</strong>
-          <span>demo@careflow.com</span>
-          <span>Demo12345!</span>
-        </div>
-
-      </div>
+      ))}
 
     </div>
 
-  );
-}
+  )}
 
-export default App;
+</section>
